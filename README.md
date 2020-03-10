@@ -12,6 +12,7 @@
     -Street
     -Kolor
     -Full house
+    -Kareta
     -Mały poker
     -Królewski poker
 ## :dart: Cele projektu:
