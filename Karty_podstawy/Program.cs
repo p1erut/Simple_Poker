@@ -14,11 +14,13 @@ namespace Karty_podstawy
            public string[] kolor;
            public string[,] talia;
            public string[] reka;
+           public string[] hierarchiaUkladow;
            public Karty() //////////////Konstruktor tworzący talie kart//////////////
             {
                 figura = new string[13] { "2","3","4","5","6","7","8","9","10","J","Q","K","A" }; 
                 kolor = new string[4] { "Kier", "Trefl", "Karo", "Pik"};
                 talia = new string[kolor.Length,figura.Length];
+                hierarchiaUkladow = new string[10] {"Kicker", "Para", "Dwie pary", "Trójka", "Street", "Kolor", "Full", "Kareta", "Mały Poker", "Królewski Poker"};
 
                 for (int i = 0; i <= kolor.Length - 1; i++)
                     for (int j = 0; j <= figura.Length - 1; j++)
@@ -37,7 +39,7 @@ namespace Karty_podstawy
                     }
                 }
             }
-            public string[] Rozdaj()
+            public void Rozdaj()
             {
                 var rand = new Random();
                 reka = new string[5];
@@ -54,11 +56,10 @@ namespace Karty_podstawy
                     }
                     Console.WriteLine(reka[i]);
                 }
-                return reka;
             }
             public void Sprawdz(){
                 //////////////Sortowanie tablicy z figurami z reka//////////////
-                int[] rekaIdSort = new int[5];// {0,1,2,3,12}; //////////////Tablica posortowanych indeksow figur z ręki////////////// !!!!PRZYPISANIE TO TEST!!!               
+                int[] rekaIdSort = new int[5]; // {0,1,2,11,12}; //////////////Tablica posortowanych indeksow figur z ręki////////////// !!!!PRZYPISANIE TO TEST!!!                              
                 string substr;               
                 for (int i = 0; i < 5; i++)               
                 {
@@ -104,13 +105,17 @@ namespace Karty_podstawy
                 {
                     Console.WriteLine(rekaIdSort[i]+", "+rekaKolorSort[i]);
                 }*/
-                string uklad = "Brak układu. Kicker " + figura[rekaIdSort[4]];
+                int[] ukladTab = new int[4]; 
+                ukladTab[0] = 0;
+                ukladTab[1] = rekaIdSort[4];
                 //////////////Analizowanie ułożenia kart i przypisanie im odpowiedniej nazwy ukladu//////////////
                 int licznikPowtorzen = 0;
                 int licznikKolejnosci = 0;
                 if (rekaKolorSort[0] == rekaKolorSort[4]) //////////////Sprawdzanie koloru; Na początku, bo to najprostsza instrukcja//////////////
                 {
-                    uklad = "Kolor " + kolor[rekaKolorSort[0]] + " z kickerem " + figura[rekaIdSort[4]];
+                    ukladTab[0] = 5;
+                    ukladTab[1] = rekaIdSort[4];
+                    ukladTab[2] = rekaKolorSort[0];
                 }
                 for (int i = 1; i < 5; i++)
                 {
@@ -119,35 +124,52 @@ namespace Karty_podstawy
                         licznikPowtorzen++;
                         if (licznikPowtorzen == 1) //////////////Odnajdywanie 1 pary//////////////
                         {
-                            uklad = "Para " + figura[rekaIdSort[i]] + " z kickerem " + figura[rekaIdSort[4]];
+                            ukladTab[0] = 1;
+                            ukladTab[1] = rekaIdSort[i];
+                            ukladTab[2] = rekaIdSort[4];
                             if (rekaIdSort[i] == rekaIdSort[4])
                             {
-                                uklad = "Para " + figura[rekaIdSort[i]] + " z kickerem " + figura[rekaIdSort[2]];
+                                ukladTab[0] = 1;
+                                ukladTab[1] = rekaIdSort[i];
+                                ukladTab[2] = rekaIdSort[2];
                             }
                         }
                         else if (licznikPowtorzen == 2)
                         {
                             if (rekaIdSort[i - 1] == rekaIdSort[i - 2])//////////////Odnajdywanie trójki//////////////
                             {
-                                uklad = "Trójka " + figura[rekaIdSort[i]] + " z kickerem " + figura[rekaIdSort[4]];
+                                ukladTab[0] = 3;
+                                ukladTab[1] = rekaIdSort[i];
+                                ukladTab[2] = rekaIdSort[4];
                                 if (rekaIdSort[i] == rekaIdSort[4])
                                 {
-                                    uklad = "Trójka " + figura[rekaIdSort[i]] + " z kickerem " + figura[rekaIdSort[1]];
+                                    ukladTab[0] = 1;
+                                    ukladTab[1] = rekaIdSort[i];
+                                    ukladTab[2] = rekaIdSort[1];
                                 }
                             }
                             else //////////////Odnajdywanie 2 par//////////////
                             {
                                 if ((rekaIdSort[i] == rekaIdSort[4]) && (rekaIdSort[2] != rekaIdSort[1]))
                                 {
-                                    uklad = "Dwie pary " + figura[rekaIdSort[i]] + " i " + figura[rekaIdSort[1]] + " z kickerem " + figura[rekaIdSort[2]];
+                                    ukladTab[0] = 2;
+                                    ukladTab[1] = rekaIdSort[i];
+                                    ukladTab[2] = rekaIdSort[1];
+                                    ukladTab[3] = rekaIdSort[2];
                                 }
                                 else if ((rekaIdSort[i] != rekaIdSort[4]) && (rekaIdSort[2] != rekaIdSort[1]))
                                 {
-                                    uklad = "Dwie pary " + figura[rekaIdSort[i]] + " i " + figura[rekaIdSort[1]] + " z kickerem " + figura[rekaIdSort[4]];
+                                    ukladTab[0] = 2;
+                                    ukladTab[1] = rekaIdSort[i];
+                                    ukladTab[2] = rekaIdSort[1];
+                                    ukladTab[3] = rekaIdSort[4];
                                 }
                                 else
                                 {
-                                    uklad = "Dwie pary " + figura[rekaIdSort[i]] + " i " + figura[rekaIdSort[1]] + " z kickerem " + figura[rekaIdSort[0]];
+                                    ukladTab[0] = 2;
+                                    ukladTab[1] = rekaIdSort[i];
+                                    ukladTab[2] = rekaIdSort[1];
+                                    ukladTab[3] = rekaIdSort[0];
                                 }
                             }
                         }
@@ -155,21 +177,29 @@ namespace Karty_podstawy
                         {
                             if ((rekaIdSort[i - 1] == rekaIdSort[i - 2]) && (rekaIdSort[i - 2]) == rekaIdSort[i - 3]) //////////////Odnajdywanie karety//////////////
                             {
-                                uklad = "Kareta " + figura[rekaIdSort[i - 3]] + " z kickerem " + figura[rekaIdSort[4]];
+                                ukladTab[0] = 7;
+                                ukladTab[1] = rekaIdSort[i-3];
+                                ukladTab[2] = rekaIdSort[4];
                                 if (rekaIdSort[i] == rekaIdSort[4])
                                 {
-                                    uklad = "Kareta " + figura[rekaIdSort[i - 3]] + " z kickerem " + figura[rekaIdSort[0]];
+                                    ukladTab[0] = 7;
+                                    ukladTab[1] = rekaIdSort[i-3];
+                                    ukladTab[2] = rekaIdSort[0];
                                 }
                             }
                             else //////////////Odnajdywanie Fulla//////////////
                             {
                                 if (rekaIdSort[1] != rekaIdSort[2])
                                 {
-                                    uklad = "Full house " + figura[rekaIdSort[2]] + " na " + figura[rekaIdSort[1]];
+                                    ukladTab[0] = 6;
+                                    ukladTab[1] = rekaIdSort[2];
+                                    ukladTab[2] = rekaIdSort[1];
                                 }
                                 else
                                 {
-                                    uklad = "Full house " + figura[rekaIdSort[1]] + " na " + figura[rekaIdSort[3]];
+                                    ukladTab[0] = 6;
+                                    ukladTab[1] = rekaIdSort[1];
+                                    ukladTab[2] = rekaIdSort[3];
                                 }
                             }
                         }
@@ -177,53 +207,90 @@ namespace Karty_podstawy
                     else if ((rekaIdSort[i] - rekaIdSort[i - 1]) == 1) //////////////Analiza czy karty są w kolejności//////////////
                     {
                         licznikKolejnosci++;
-                        if ((licznikKolejnosci == 4) || (((licznikKolejnosci == 3) && (rekaIdSort[4] == 12)) && rekaIdSort[0] == 0))
+                        if ((licznikKolejnosci == 4) || ((((licznikKolejnosci == 3) && (rekaIdSort[4] == 12)) && rekaIdSort[0] == 0) && rekaIdSort[3] != 11))
                         {
                             if (rekaKolorSort[0] == rekaKolorSort[4]) //////////////Warunek do pokerów//////////////
                             {
-                                uklad = "Mały poker od " + figura[rekaIdSort[0]] + " do " + figura[rekaIdSort[4]];
+                                ukladTab[0] = 8;
+                                ukladTab[1] = rekaIdSort[0];
+                                ukladTab[2] = rekaIdSort[4];
                                 if (rekaIdSort[0] == 0 && rekaIdSort[4] == 12)
                                 {
-                                    uklad = "Mały poker od " + figura[rekaIdSort[4]] + " do " + figura[rekaIdSort[3]];
+                                    ukladTab[0] = 8;
+                                    ukladTab[1] = rekaIdSort[4];
+                                    ukladTab[2] = rekaIdSort[3];
                                 }
                                 else if (rekaIdSort[0] == 8 && rekaIdSort[4] == 12)
                                 {
-                                    uklad = "Królewski poker!";
+                                    ukladTab[0] = 9;
                                 }
                             }
                             else //////////////Street//////////////
                             {
-                                uklad = "Street od " + figura[rekaIdSort[0]] + " do " + figura[rekaIdSort[4]];
+                                ukladTab[0] = 4;
+                                ukladTab[1] = rekaIdSort[0];
+                                ukladTab[2] = rekaIdSort[4];
                                 if (rekaIdSort[0] == 0 && rekaIdSort[4] == 12)
                                 {
-                                    uklad = "Street od " + figura[rekaIdSort[4]] + " do " + figura[rekaIdSort[3]];
+                                    ukladTab[0] = 4;
+                                    ukladTab[1] = rekaIdSort[4];
+                                    ukladTab[2] = rekaIdSort[3];
                                 }
                             }
                         }
                     } 
                 }
-                Console.WriteLine(uklad);
+                switch (ukladTab[0])
+                {
+                    case 0:
+                        Console.WriteLine("{0} {1}", hierarchiaUkladow[ukladTab[0]], figura[ukladTab[1]]);
+                        break;
+                    case 2:
+                        Console.WriteLine("{0}, {1} i {2}, z kickerem {3}", hierarchiaUkladow[ukladTab[0]], figura[ukladTab[1]], figura[ukladTab[2]], figura[ukladTab[3]]);
+                        break;
+                    case 5:
+                        Console.WriteLine("{0} {1}, z kickerem {2}", hierarchiaUkladow[ukladTab[0]], figura[ukladTab[2]], figura[ukladTab[1]]);
+                        break;
+                    case 1:
+                    case 3:
+                    case 7:
+                        Console.WriteLine("{0} {1}, z kickerem {2}", hierarchiaUkladow[ukladTab[0]], figura[ukladTab[1]], figura[ukladTab[2]]);
+                        break;
+                    case 6:
+                        Console.WriteLine("{0} {1} na {2}", hierarchiaUkladow[ukladTab[0]], figura[ukladTab[1]], figura[ukladTab[2]]);
+                        break;
+                    case 4:
+                    case 8:
+                        Console.WriteLine("{0} od {1} do {2}", hierarchiaUkladow[ukladTab[0]], figura[ukladTab[1]], figura[ukladTab[2]]);
+                        break;
+                    case 9:
+                        Console.WriteLine("{0}, Gratulacje!!!", hierarchiaUkladow[ukladTab[0]]);
+                        break;
+                }
             }
         };
         static void Main()
         {
             Karty poker = new Karty();
             //talia.Fan();
-            while(true)
+            while (true)
             {
                 Console.Clear();
                 poker.Rozdaj();
-                poker.Sprawdz();
-                Console.WriteLine("\nNaciśnij ENTER aby wylosować ponownie");               
+                poker.Sprawdz();          
+                Console.WriteLine("\nNaciśnij ENTER aby wylosować ponownie");
                 Console.WriteLine("Naciśnij Ctrl+C aby zakończyć.");
                 Console.Read();
-            }           
+            }
         }
     }
 }
 
-//Do zrobienia
-//-Zamiast przypisania uklad = para 5 z kickerem Q zrobic tablice skladajaca sie z 3 cyfr np. 
-// uklad = abcd z czego kolejno: a-uklad, b-figura znaczaca, c-figura mniej znaczaca, d-kicker; 
-// dla ulatwienia okreslenia sily ukladu, moze na tablicy 2D gdzie [K,W] K-kolumna z indeksem reki i w W po kolei w dół jak w poprzednim przykladzie
-// lub tablica tab[a,b,c,d]
+
+//ukladTab INFO
+//[ID Ukladu, ID Kickera] Dla braku układu
+//[ID ukladu, ID Znaczącej karty, ID mniej znaczącej karty, ID Kickera] Dla układu Dwie pary
+//[ID Ukladu, ID Kickera, ID koloru] Dla koloru
+//[ID Ukladu, ID Znaczącej karty, ID Kickera/ID mniej znaczącej karty] Dla układów: Trójka, Para, Kareta, Full House
+//[ID Ukladu, ID Od, ID Do] Dla układów: Street, Mały poker
+//[ID Ukladu] Dla Krolewskiego Pokera
