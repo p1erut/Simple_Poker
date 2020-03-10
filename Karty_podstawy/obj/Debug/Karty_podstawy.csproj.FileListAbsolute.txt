@@ -4,3 +4,9 @@ E:\Prg\C#\Karty_podstawy\Karty_podstawy\bin\Debug\Karty_podstawy.pdb
 E:\Prg\C#\Karty_podstawy\Karty_podstawy\obj\Debug\Karty_podstawy.csprojAssemblyReference.cache
 E:\Prg\C#\Karty_podstawy\Karty_podstawy\obj\Debug\Karty_podstawy.exe
 E:\Prg\C#\Karty_podstawy\Karty_podstawy\obj\Debug\Karty_podstawy.pdb
+E:\Prg\C#\Poker\Karty_podstawy\bin\Debug\Karty_podstawy.exe.config
+E:\Prg\C#\Poker\Karty_podstawy\bin\Debug\Karty_podstawy.exe
+E:\Prg\C#\Poker\Karty_podstawy\bin\Debug\Karty_podstawy.pdb
+E:\Prg\C#\Poker\Karty_podstawy\obj\Debug\Karty_podstawy.csprojAssemblyReference.cache
+E:\Prg\C#\Poker\Karty_podstawy\obj\Debug\Karty_podstawy.exe
+E:\Prg\C#\Poker\Karty_podstawy\obj\Debug\Karty_podstawy.pdb
