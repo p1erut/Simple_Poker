@@ -1,7 +1,10 @@
 # Poker
 
 ## :memo: Informacje o projekcie:
-    Projekt w C# polegający na odwzorowaniu popularnej gry karcianej Poker. Na aktualnym etapie nie odwzorowuje żadnej odmiany gry a jedynie przedstawia podstawową mechanikę rozdawania kart oraz rozpoznawania układów w następującej hierarchi:
+    Projekt w C# polegający na odwzorowaniu popularnej gry karcianej Poker. 
+    Na aktualnym etapie nie odwzorowuje żadnej odmiany gry a jedynie 
+    przedstawia podstawową mechanikę rozdawania kart oraz 
+    rozpoznawania układów w następującej hierarchi:
     -Wysoka karta (Kicker)
     -Para
     -Dwie pary
