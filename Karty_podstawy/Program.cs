@@ -13,18 +13,17 @@ namespace Karty_podstawy
            public string[] figura;
            public string[] kolor;
            public string[,] talia;
-           public string[] kartyWGrze;
            public string[] hierarchiaUkladow;
-           public Karty(int iloscRak) //////////////Konstruktor tworzący talie kart//////////////
+           public Karty() //////////////Konstruktor tworzący talie kart//////////////
             {
                 figura = new string[13] { "2","3","4","5","6","7","8","9","10","J","Q","K","A" }; 
                 kolor = new string[4] { "Kier", "Trefl", "Karo", "Pik"};
-                talia = new string[kolor.Length,figura.Length];
-                kartyWGrze = new string[5 + ((iloscRak-1) * 5)];
-                hierarchiaUkladow = new string[10] {"Kicker", "Para", "Dwie pary", "Trójka", "Street", "Kolor", "Full", "Kareta", "Mały Poker", "Królewski Poker"};
+                talia = new string[kolor.Length, figura.Length];
+                hierarchiaUkladow = new string[10] {"Kicker", "Para", "Dwie pary", "Trójka", "Street", "Kolor", "Full", "Kareta", "Mały Poker", "Królewski Poker"};               
                 for (int i = 0; i <= kolor.Length - 1; i++)
                     for (int j = 0; j <= figura.Length - 1; j++)
                         talia[i, j] = figura[j] + " " + kolor[i];
+                
            }
            public void Fan() //////////////Metoda pomocnicza do wyświetlenia talii kart//////////////
             {
@@ -35,48 +34,50 @@ namespace Karty_podstawy
                         Console.WriteLine("\n");
                     for (int j = 0; j <= figura.Length - 1; j++)
                     {
-                        Console.WriteLine(talia[i, j]);
+                        Console.WriteLine("[{0},{1}] = {2}", i, j, talia[i, j]);
                     }
                 }
             }
-            public string[] Rozdaj(int idReki)
+            public string[] Rozdaj()
             {
                 var rand = new Random();
-                string[] reka = new string[5];               
-                Console.WriteLine("\nReka {0} rozdano: ", idReki);
-                for (int i = 0; i < 5; i++)
-                {                    
-                    reka[i] = talia[rand.Next(4), rand.Next(13)];
-                    kartyWGrze[i + (5 * (idReki - 1))] = reka[i];
-                    for (int j = 0; j < (i + (5*(idReki-1))); j++) //////////////Petla eliminująca wylosowanie identycznej karty//////////////
+                string[] reka = new string[5];
+                int losI; // Wylosowana współrzędna i
+                int losJ; // Wylosowana współrzędna j
+                Console.WriteLine("\nRozdano: ");
+                for (int i = 0; i<5; i++)
+                {
+                    losI = rand.Next(4);
+                    losJ = rand.Next(13);
+                    reka[i] = talia[losI, losJ];
+                    talia[losI, losJ] = "Null";
+                    while(reka[i] == "Null")
                     {
-                        while (reka[i] == kartyWGrze[j])
-                        {
-                            Console.WriteLine("Reka[{0}] = {1} czyli kartyWGrze[{2}]", i, reka[i], j);
-                            reka[i] = talia[rand.Next(4), rand.Next(13)];
-                            kartyWGrze[i + (5 * (idReki - 1))] = reka[i];
-                        } 
+                        losI = rand.Next(4);
+                        losJ = rand.Next(13);
+                        reka[i] = talia[losI, losJ];
+                        talia[losI, losJ] = "Null";
                     }
                     Console.WriteLine(reka[i]);
                 }
                 return reka;
             }
-            public void Sprawdz(string[] rekaSprawdzana){
+            public void Sprawdz(string[] reka){
                 //////////////Sortowanie tablicy z figurami z reka//////////////
-                int[] rekaIdSort = new int[5]; // {0,1,2,11,12}; //////////////Tablica posortowanych indeksow figur z ręki////////////// !!!!PRZYPISANIE TO TEST!!!                              
+                int[] rekaIdSort = new int[5]; //////////////Tablica posortowanych indeksow figur z ręki//////////////                     
                 string substr;               
                 for (int i = 0; i < 5; i++)               
                 {
                     for(int j = 0; j < 13; j++)
                     {
                         
-                        if(rekaSprawdzana[i].Substring(0,1) == "1")
+                        if(reka[i].Substring(0,1) == "1")
                         {
-                            substr = rekaSprawdzana[i].Substring(0, 2);
+                            substr = reka[i].Substring(0, 2);
                         }                                                  
                         else
                         {
-                            substr = rekaSprawdzana[i].Substring(0, 1);
+                            substr = reka[i].Substring(0, 1);
                         }
                         if(figura[j] == substr)
                         {
@@ -88,7 +89,7 @@ namespace Karty_podstawy
                 int[] rekaKolorSort = new int[5];// { 0, 0, 0, 0, 0 }; //////////////Posortowana tablica z kolorami ręki//////////////
                 for (int i = 0; i < 5; i++)
                 {
-                    switch(rekaSprawdzana[i].Substring(rekaSprawdzana[i].Length - 1, 1))
+                    switch(reka[i].Substring(reka[i].Length - 1, 1))
                     {
                         case "r":
                             rekaKolorSort[i] = 0;
@@ -106,10 +107,6 @@ namespace Karty_podstawy
                 }                
                 Array.Sort(rekaKolorSort);
                 Array.Sort(rekaIdSort);
-                /*for(int i = 0; i < 5; i++) //////////////Petla wyłącznie do celów testowych wyświetlająca posortowane indeksy figur i kolorow wylosowanych kart//////////////
-                {
-                    Console.WriteLine(rekaIdSort[i]+", "+rekaKolorSort[i]);
-                }*/
                 int[] ukladTab = new int[4]; 
                 ukladTab[0] = 0;
                 ukladTab[1] = rekaIdSort[4];
@@ -275,23 +272,33 @@ namespace Karty_podstawy
             }
         };
         static void Main()
-        {
-            Karty poker = new Karty(2);
-            //talia.Fan();
-            
+        {                   
             while (true)
             {
+                Karty poker = new Karty();
                 Console.Clear();
-                string[] reka1 = poker.Rozdaj(1);
-                poker.Sprawdz(reka1);
-                string[] reka2 = poker.Rozdaj(2);
-                poker.Sprawdz(reka2);
 
-                Console.Read();
+                string[] reka1 = poker.Rozdaj();
+                poker.Sprawdz(reka1);
+
+                string[] reka2 = poker.Rozdaj();
+                poker.Sprawdz(reka2);
+                
+                string[] reka3 = poker.Rozdaj();
+                poker.Sprawdz(reka3);
+                
+                string[] reka4 = poker.Rozdaj();
+                poker.Sprawdz(reka4);
+               
+                string[] reka5 = poker.Rozdaj();
+                poker.Sprawdz(reka5);
+
+                //Console.WriteLine("\nTalia wygląda teraz tak: ");
+                //poker.Fan();
                 Console.WriteLine("\nNaciśnij ENTER aby wylosować ponownie");
                 Console.WriteLine("Naciśnij Ctrl+C aby zakończyć.");
-                Console.Read();
-            }                 
+                Console.Read();                
+            }            
         }
     }
 }
