@@ -44,7 +44,7 @@ namespace Karty_podstawy
                 string[] reka = new string[5];
                 int losI; // Wylosowana współrzędna i
                 int losJ; // Wylosowana współrzędna j
-                Console.WriteLine("\nRozdano: ");
+                //Console.WriteLine("\nRozdano: ");
                 for (int i = 0; i<5; i++)
                 {
                     losI = rand.Next(4);
@@ -62,7 +62,7 @@ namespace Karty_podstawy
                 }
                 return reka;
             }
-            public void Sprawdz(string[] reka){
+            public int[] Sprawdz(string[] reka){
                 //////////////Sortowanie tablicy z figurami z reka//////////////
                 int[] rekaIdSort = new int[5]; //////////////Tablica posortowanych indeksow figur z ręki//////////////                     
                 string substr;               
@@ -110,6 +110,8 @@ namespace Karty_podstawy
                 int[] ukladTab = new int[4]; 
                 ukladTab[0] = 0;
                 ukladTab[1] = rekaIdSort[4];
+                ukladTab[2] = rekaIdSort[3];
+                ukladTab[3] = rekaIdSort[2];                
                 //////////////Analizowanie ułożenia kart i przypisanie im odpowiedniej nazwy ukladu//////////////
                 int licznikPowtorzen = 0;
                 int licznikKolejnosci = 0;
@@ -269,36 +271,139 @@ namespace Karty_podstawy
                         Console.WriteLine("{0}, Gratulacje!!!", hierarchiaUkladow[ukladTab[0]]);
                         break;
                 }
+                return ukladTab;
             }
         };
         static void Main()
-        {                   
-            while (true)
+        {                               
+            Karty poker = new Karty();
+            Console.Write("Ile rąk rozdać? (2-5): ");
+            int ilosc = int.Parse(Console.ReadLine());
+            int[,] wynikTab = new int[ilosc, 4]; //[ID Reki, ID z tablicy ukladTab] np[2,0] wyświetli ID układu trzeciej ręki 
+            int[] uklady = new int[ilosc];
+            for (int i=0; i < ilosc; i++)
             {
-                Karty poker = new Karty();
-                Console.Clear();
-
-                string[] reka1 = poker.Rozdaj();
-                poker.Sprawdz(reka1);
-
-                string[] reka2 = poker.Rozdaj();
-                poker.Sprawdz(reka2);
+                Console.WriteLine("\nRęka {0}: ", i + 1);
+                int[] wynik = poker.Sprawdz(poker.Rozdaj());                
+                for (int j = 0; j < wynik.Length; j++)
+                {
+                    wynikTab[i, j] = wynik[j];
+                }
+                uklady[i] = wynik[0]; // Indeksy numerów układów; indeks danego numeru to indeks ręki
+            }
+            /// I STOPIEN - Uklad się nie powtarza ///
+            int licznik = 0;           
+            for (int i=0; i < ilosc; i++)
+            {
+                if(uklady.Max() == uklady[i])
+                {                    
+                    licznik++;
+                }                
+            };
+            if (licznik == 1) // Najprostsza opcja, największy układ występuje raz i łatwo go wyłonić
+            {
+                Console.WriteLine("\nWygrywa ręka: {0}!",Array.IndexOf(uklady , uklady.Max())+1);
+            }
+            else
+            {
+                int j = 0;
+                while (j != 3)
+                {                    
+                    int[] indeksyNajwiekszych = new int[licznik];
+                    for (int i = 0; i < licznik; i++)
+                    {
+                        if (i == 0)
+                        {
+                            indeksyNajwiekszych[i] = Array.IndexOf(uklady, uklady.Max());
+                        }
+                        else if (i > 0)
+                        {
+                            indeksyNajwiekszych[i] = Array.IndexOf(uklady, uklady.Max(), indeksyNajwiekszych[i - 1] + 1);
+                        }
+                    }
+                    int[] kickery = new int[licznik];
+                    for (int i = 0; i < licznik; i++)
+                    {
+                        kickery[i] = wynikTab[indeksyNajwiekszych[i], 1 + j]; // Tablica przechowująca indeksy kickerów najwyzszych ukladów
+                    }
+                    int licznikKickerow = 0;
+                    for (int i = 0; i < licznik; i++)
+                    {
+                        if (kickery[i] == kickery.Max())
+                        {
+                            licznikKickerow++;
+                        }
+                    }
+                    if (licznikKickerow == 1)
+                    {
+                        Console.WriteLine("\nWygrywa ręka: {0}!", indeksyNajwiekszych[Array.IndexOf(kickery, kickery.Max())] + 1);
+                        j = 3;
+                        ////////////// TESTY////////////////
+                        Console.WriteLine("\n" + poker.hierarchiaUkladow[uklady.Max()] + ", powtarza się " + licznik + " razy");
+                        Console.WriteLine("I są na rękach: ");
+                        for (int i = 0; i < licznik; i++)
+                        {
+                            Console.WriteLine(indeksyNajwiekszych[i] + 1 + " " + poker.figura[kickery[i]]);
+                        }
+                        //////////////////////////////////////
+                    }
+                    else
+                    {
+                        j++;
+                    }
+                };
+            }
+            /*                                                                                                             Tu komentarz
+            /// II STOPIEN - Uklad się powtarza i I znacząca sie nie powtarza ///
+            else if(licznik > 1) 
+            {
+                int[] indeksyNajwiekszych = new int[licznik];
+                for(int i = 0; i < licznik; i++)
+                {
+                    if (i == 0)
+                    {
+                        indeksyNajwiekszych[i] = Array.IndexOf(uklady, uklady.Max());
+                    }
+                    else if(i > 0)
+                    {
+                        indeksyNajwiekszych[i] = Array.IndexOf(uklady, uklady.Max(),indeksyNajwiekszych[i-1]+1);
+                    }
+                }
+                int[] kickery = new int[licznik];
+                for(int i = 0; i < licznik; i++)
+                {
+                    kickery[i] = wynikTab[indeksyNajwiekszych[i], 1]; // Tablica przechowująca indeksy kickerów najwyzszych ukladów
+                }
+                int licznikKickerow = 0;
+                for(int i = 0; i< licznik; i++)
+                {
+                    if(kickery[i] == kickery.Max())
+                    {
+                        licznikKickerow++;
+                    }
+                }
+                if(licznikKickerow == 1)
+                {
+                    Console.WriteLine("\nWygrywa ręka: {0}!",indeksyNajwiekszych[Array.IndexOf(kickery, kickery.Max())] + 1);
+                }
+                /// III STOPIEN - Uklad się powtarza i I znacząca się powtarza, ale II znacząca się nie powtarza ///
+                else if(licznikKickerow > 1)
+                {
+                    Console.WriteLine("XDXDXD");
+                }
+                ////////////// TESTY////////////////
                 
-                string[] reka3 = poker.Rozdaj();
-                poker.Sprawdz(reka3);
+                Console.WriteLine("\n" + poker.hierarchiaUkladow[uklady.Max()] + ", powtarza się " + licznik + " razy");
+                Console.WriteLine("I są na rękach: ");
+                for (int i = 0; i < licznik; i++)
+                {
+                    Console.WriteLine(indeksyNajwiekszych[i] + 1 + " " + poker.figura[kickery[i]]);                    
+                } 
                 
-                string[] reka4 = poker.Rozdaj();
-                poker.Sprawdz(reka4);
-               
-                string[] reka5 = poker.Rozdaj();
-                poker.Sprawdz(reka5);
-
-                //Console.WriteLine("\nTalia wygląda teraz tak: ");
-                //poker.Fan();
-                Console.WriteLine("\nNaciśnij ENTER aby wylosować ponownie");
-                Console.WriteLine("Naciśnij Ctrl+C aby zakończyć.");
-                Console.Read();                
-            }            
+                //////////////////////////////////////
+            }                                                                                                             Aż do tąd */
+            Console.WriteLine("\nNaciśnij dowolny przycisk aby zakończyć");
+            Console.Read();           
         }
     }
 }
